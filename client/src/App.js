@@ -1,73 +1,92 @@
-import React, { Component } from "react";
-import SimpleStorageContract from "./contracts/SimpleStorage.json";
-import getWeb3 from "./getWeb3";
-
+import React, { Component , useState } from "react";
+import { NoWalletDetected } from "./components/NoWalletDetected";
+import { Navbar } from "./components/NavbarUI";
+import ScinionHelperContract from "./contracts/ScinionHelper.json";
+import { useEffect } from 'react';
+import Web3 from 'web3'
 import "./App.css";
+import { init } from "./components/Web3Client";
 
-class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
+let selectedAccount;
 
-  componentDidMount = async () => {
-    try {
-      // Get network provider and web3 instance.
-      const web3 = await getWeb3();
+function App() {
+  const [account, setAccount] = useState(); 
+ 
+  useEffect(() => {
+     init();
 
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts();
+  }, []);
 
-      // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = SimpleStorageContract.networks[networkId];
-      const instance = new web3.eth.Contract(
-        SimpleStorageContract.abi,
-        deployedNetwork && deployedNetwork.address,
-      );
-
-      // Set web3, accounts, and contract to the state, and then proceed with an
-      // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
-    } catch (error) {
-      // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`,
-      );
-      console.error(error);
-    }
-  };
-
-  runExample = async () => {
-    const { accounts, contract } = this.state;
-
-    // Stores a given value, 5 by default.
-    await contract.methods.set(5).send({ from: accounts[0] });
-
-    // Get the value from the contract to prove it worked.
-    const response = await contract.methods.get().call();
-
-    // Update state with the result.
-    this.setState({ storageValue: response });
-  };
-
-  render() {
-    if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
-    }
-    return (
-      <div className="App">
-        <h1>Good to Go!</h1>
-        <p>Your Truffle Box is installed and ready.</p>
-        <h2>Smart Contract Example</h2>
-        <p>
-          If your contracts compiled and migrated successfully, below will show
-          a stored value of 5 (by default).
-        </p>
-        <p>
-          Try changing the value stored on <strong>line 42</strong> of App.js.
-        </p>
-        <div>The stored value is: {this.state.storageValue}</div>
-      </div>
-    );
+  if (window.ethereum === undefined) {
+    return <NoWalletDetected />;
   }
+
+  const scinonsHandler =  async () => { 
+    const networkId = '5777'
+    const networkData = ScinionHelperContract.networks[networkId]
+    if(networkData) {
+      const Contract = require('web3-eth-contract');
+      const address = networkData.address
+      const contract = new Contract(ScinionHelperContract.abi , address)
+      console.log(contract);
+  
+      // Función 'totalSupply' del Smart Contract
+      const scinions = await contract.methods.getScinionsByOwner("0x54CE379c44ECB6796a4d1718D9131F6Ae858bCED");
+      console.log(scinions);
+      contract.methods.methods.getScinionsByOwner("0x54CE379c44ECB6796a4d1718D9131F6Ae858bCED").send({from: '0x54CE379c44ECB6796a4d1718D9131F6Ae858bCED'})
+        .on('receipt', function(){
+        console.log("holi")
+      });
+  
+    } else {
+      window.alert('¡Smart Contract no desplegado en la red!')
+    }
+  }
+
+  const seeMyScinions = () => {
+    return (
+      <button onClick={scinonsHandler} className='button-59'>
+        See my scinions
+      </button>
+    )
+  }
+
+  return (
+    <div className="container">
+    <Navbar/>
+    <div className="row justify-content-md-center">
+      <div className="col-md-8 my-auto text-center">
+        <h1 className="bd-title"><strong>Become Laboratory owner!</strong></h1>
+        <h3>
+          <small className="text-muted">Start collecting scinions and complete investigations.</small>
+        </h3>
+      
+
+      </div>
+
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <div className="row justify-content-md-center">
+      <div className="col-md-8 my-auto text-center">
+      <div>
+          {seeMyScinions()}
+       </div>
+       </div>
+
+    </div>
+
+
+     <div>
+     <p>Your account is: {account}</p> 
+    </div>
+    </div>
+  );
+
 }
+
 
 export default App;
