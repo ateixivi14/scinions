@@ -28,7 +28,14 @@ contract ScinionHelper is ScinionFactory {
         scinions[_scinionId].dna = _newDna;
     }
 
-    function getScinionsByOwner(address _owner) external view returns(uint[] memory) {
+    function getScinionsByOwner(address _owner) external view returns(Scinion[] memory) {
+        Scinion[] memory scinionsByOwner;
+        for (uint i = 0; i < scinions.length; i++) {
+            if (scinionToOwner[i] == _owner) {
+                scinionsByOwner[i]= scinions[i];
+            }
+        }    
+        /*
         uint[] memory result = new uint[](ownerScinionCount[_owner]);
         uint counter = 0;
         for (uint i = 0; i < scinions.length; i++) {
@@ -38,6 +45,10 @@ contract ScinionHelper is ScinionFactory {
             }
         }
         return result;
+
+
+        */
+        return scinionsByOwner;
     }
 
 

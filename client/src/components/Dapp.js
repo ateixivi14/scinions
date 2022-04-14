@@ -49,20 +49,10 @@ export class Dapp extends React.Component {
       selectedAddress: undefined,
       balance: undefined,
       // The ID about transactions being sent, and any possible error with them
-      txBeingSent: undefined,
-      transactionError: undefined,
-      networkError: undefined,
       scinionToken: undefined,
-      isFlipped: false,
       scinionData: undefined,
       moveData: undefined,
       myScinions: [],
-      currentCard: undefined,
-      userDID: undefined, // 3DID authentication
-      progress: false,
-      name: '',
-      age: '',
-      about: '' 
     };
 
     this.state = this.initialState;
