@@ -21,7 +21,7 @@ contract ScinionFactoryTest1 is Ownable, ERC721 {
 
   event NewScinion(uint scinionId, string name);
 
-  event MoneyAccount(uint money, address from);
+  event MoneyTransfer(uint money, address from);
 
   address payable gameOwner;
 
@@ -40,6 +40,7 @@ contract ScinionFactoryTest1 is Ownable, ERC721 {
 
    constructor() ERC721("ScinionNFT", "SCTK") {
         gameOwner = payable(msg.sender);
+        _baseURIextended = "";
     }
 
 
@@ -95,20 +96,19 @@ contract ScinionFactoryTest1 is Ownable, ERC721 {
     emit Transfer(_from, _to, _tokenId);
   }
 
-  function transferScinion(address _from, address _to, uint256 _tokenId) external payable onlyOwner{
+  function transferScinion(address _from, address _to, uint256 _tokenId) external payable onlyOwner {
       require(msg.value >= minPrice, "Not enough ETH sent; check price!"); 
       _transferScinion(_from, _to, _tokenId);
       transferFrom(_from, _to, _tokenId);
    } 
 
   function claimScinion(uint256 _tokenId) external payable {
-    emit MoneyAccount(msg.value, msg.sender);
+    emit MoneyTransfer(msg.value, msg.sender);
     require(msg.value >= minPrice, "Not enough ETH sent; check price!"); 
     ownerScinionCount[msg.sender] = ownerScinionCount[msg.sender].add(1);
     scinionToOwner[_tokenId] = msg.sender;
     emit Transfer(msg.sender, gameOwner, minPrice);
     _safeMint(msg.sender, _tokenId);
-    tokenURI(_tokenId);
   }
 
   function balanceOfScinions(address owner) external view returns (uint balance) {
