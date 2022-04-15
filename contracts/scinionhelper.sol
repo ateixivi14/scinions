@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 import "./scinionfactory.sol";
 
 
-contract ScinionHelper is ScinionFactory {
+contract ScinionHelper is ScinionFactoryTest1 {
 
      uint levelUpFee = 0.001 ether;
 
@@ -28,7 +28,7 @@ contract ScinionHelper is ScinionFactory {
         scinions[_scinionId].dna = _newDna;
     }
 
-    function getScinionsByOwner(address _owner) external view returns(Scinion[] memory) {
+    function getScinionsByOwner(address _owner) private view returns(Scinion[] memory) {
         Scinion[] memory scinionsByOwner;
         for (uint i = 0; i < scinions.length; i++) {
             if (scinionToOwner[i] == _owner) {
@@ -63,5 +63,16 @@ contract ScinionHelper is ScinionFactory {
         scinionSelected.energia = 10;
     }
 
+    function getOneScinionData() external pure returns(string memory name, uint16 level, uint8 energia){
+        Scinion memory newScinion;
+        newScinion.name = "Alba";
+        newScinion.scinionType = "Buenas manos";
+        newScinion.dna = 1234568;
+        newScinion.energia = 10;
+        newScinion.level = 1;
+        newScinion.habilities = 100100100100100100100;
+        return (newScinion.name, newScinion.level, newScinion.energia);
+
+    }
 
 }

@@ -4,7 +4,8 @@ const utils = require("./utils");
 
 contract("ScinionsFactory", (accounts) => {
     console.log(accounts);
-    let dna = 100000;
+    let dna = 0101010101;
+    let habilities = 100100100100;
     let scinionType =  "Ratón de biblioteca"
     let alice = accounts[4];
     let bob = accounts[5];
@@ -22,7 +23,7 @@ contract("ScinionsFactory", (accounts) => {
         assert.notEqual(address, null);
         assert.notEqual(address, '');
         assert.notEqual(address, undefined);
-        assert.equal(owner, owner2 );
+        assert.equal(owner, owner2);
     })
 
     it("should be able to create a new scinion if address is the owner", async () => {
@@ -41,7 +42,7 @@ contract("ScinionsFactory", (accounts) => {
 
     it("should mint a scinion", async () => {
         owner = await contractInstance.getOwner();
-        const result = await contractInstance.createScinion(scinionNames[0], scinionType, dna,  {from: owner});
+        const result = await contractInstance.createScinion(scinionNames[0], scinionType, dna,  habilities, {from: owner});
         const scinionId = result.logs[0].args.scinionId.toNumber();
         await contractInstance.claimScinion(scinionId, {from: alice});
         const newOwner = await contractInstance.ownerOf(scinionId);
