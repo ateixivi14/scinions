@@ -1,18 +1,12 @@
-import React, { Component , useState } from "react";
+import React from "react";
 import { Navbar } from "./components/NavbarUI";
-import { useEffect } from 'react';
 import "./App.css";
 import WalletCard from "./components/WalletCard";
 import ScinionsHelper from "./components/ScinionsHelper";
-
+import MintScinion from "./components/MintScinion";
 
 
 function App() {
- 
-  useEffect(() => {
-
-  }, []);
-
 
   return (
     <div className="container">
@@ -40,6 +34,10 @@ function App() {
         </div>
         <div className="col-md-4 text-center">
            <ScinionsHelper/>
+        </div>
+
+        <div className="col-md-4 text-center">
+           <MintScinion/>
         </div>
   
       </div>

@@ -2,16 +2,14 @@ import React, {useState} from 'react'
 import {ethers} from 'ethers'
 
 import ScinionHelperContract from "./../contracts/ScinionHelper.json";
-const contractAddress = "";
-
-const ScinionsHelper = () => {
-
-	  const [name, setName] = useState(null);
-    const [energia, setEnergia] = useState(null);
-    const [level, setLevel] = useState(null);
+const contractAddress = "0xbDb5568F71676eba993341A353246D6334d4aF94";
 
 
-    const getScinionDataHandler = async () => {
+const MintScinion = () => {
+
+    const [tokenId, setTokenId] = useState(null);
+
+    const mintScinionHandler = async () => {
         
         try {
             const { ethereum } = window;
@@ -22,13 +20,11 @@ const ScinionsHelper = () => {
               const scinionHelperInstance = new ethers.Contract(contractAddress, ScinionHelperContract.abi, signer);
     
               console.log("Initialize request");
-              let scinionData = await scinionHelperInstance.getOneScinionData();
+              let tokenId = await scinionHelperInstance.claimScinion("robert");
 
-              setName(scinionData.name);
-              setLevel(scinionData.level);
-              setEnergia(scinionData.energia);
+              setTokenId(tokenId);
     
-              console.log(scinionData);
+              console.log(tokenId);
     
             } else {
               console.log("Ethereum object does not exist");
@@ -39,23 +35,24 @@ const ScinionsHelper = () => {
           }
         } 
 
+
+
         return (
+
             <div>
-            <button onClick={getScinionDataHandler} className='button-59'>
-              See my scinions
+            <button onClick={mintScinionHandler} className='button-59'>
+              Mint a scinion
             </button>
 
             <div>
-                {energia ? <h7> Energy: {energia} </h7> : ""}
-                {name ? <h7> Name: {name} </h7> : ""}
-                {level ? <h7> Level: {level} </h7> : ""}
+                {tokenId ? <h7> TokenId: {tokenId} </h7> : ""}
+
             </div>
 
             </div>
          
 
         )
-    
 }
 
-export default ScinionsHelper;
+export default MintScinion;

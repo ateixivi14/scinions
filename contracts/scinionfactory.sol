@@ -9,24 +9,28 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import '@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol';
 
 
-contract ScinionFactoryTest1 is Ownable, ERC721 {
+contract ScinionFactory is Ownable, ERC721 {
 
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
   string private _baseURIextended;
+  mapping (uint256 => string) private _tokenURIs;
 
-  uint minPrice = 0.001 ether;
+  uint minPrice = 0.01 ether;
 
   using SafeMath for uint256;
 
   event NewScinion(uint scinionId, string name);
 
-  event MoneyTransfer(uint money, address from);
-
   address payable gameOwner;
 
   function getOwner() public view returns (address) {
         return gameOwner;
+  }
+
+  modifier onlyOwnerOf(uint _scinionId) {
+    require(msg.sender == ownerOf(_scinionId));
+    _;
   }
 
   struct Scinion {
@@ -40,84 +44,87 @@ contract ScinionFactoryTest1 is Ownable, ERC721 {
 
    constructor() ERC721("ScinionNFT", "SCTK") {
         gameOwner = payable(msg.sender);
-        _baseURIextended = "";
+        _baseURIextended = "https://ipfs.io/ipfs/";
     }
 
 
-  Scinion[] internal scinions;
-
-  mapping (uint => address) internal scinionToOwner;
-  mapping (address => uint) internal ownerScinionCount;
-
-  modifier onlyOwnerOf(uint _scinionId) {
-    require(msg.sender == scinionToOwner[_scinionId]);
-    _;
-  }
+  Scinion[] public scinions;
 
   function rand(uint8 _min, uint8 _max, string memory _name) private pure returns (uint8){
     return uint8(uint(keccak256(abi.encodePacked(_name)))%(_min+_max)-_min);
   }
 
-  function setMinPrice(uint _fee) external onlyOwner {
+  function setMinPrice(uint _fee) external onlyOwner() {
     minPrice = _fee;
-  }
-
-  function setBaseURI(string memory baseURI_) external onlyOwner() {
-     _baseURIextended = baseURI_;
   }
 
   function _baseURI() internal view virtual override returns (string memory) {
     return _baseURIextended;
   }
 
-  function createScinion(string memory _name, string memory _scinionType, uint _dna, uint _habilities) external onlyOwner {
-    _tokenIds.increment();
+   function setBaseURI(string memory baseURI_) external onlyOwner() {
+     _baseURIextended = baseURI_;
+   }
+
+    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
+      require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
+      _tokenURIs[tokenId] = _tokenURI;
+    }
+
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+      require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+
+      string memory _tokenURI = _tokenURIs[tokenId];
+      string memory base = _baseURI();
+      
+      // If there is no base URI, return the token URI.
+      if (bytes(base).length == 0) {
+          return _tokenURI;
+      }
+      // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
+      if (bytes(_tokenURI).length > 0) {
+          return string(abi.encodePacked(base, _tokenURI));
+      }
+      // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
+      return string(abi.encodePacked(base, tokenId));
+    }
+
+  function _createScinion(string memory _name) private returns(uint tokenId) {
+     _tokenIds.increment();
     uint256 id = _tokenIds.current();
     Scinion memory newScinion;
     newScinion.name = _name;
-    newScinion.scinionType = _scinionType;
-    newScinion.dna = _dna;
+    newScinion.scinionType = _setScinionType();
+    newScinion.dna = _setDna();
     newScinion.energia = 10;
     newScinion.level = 1;
-    newScinion.habilities = _habilities;
+    newScinion.habilities = _setPerfectHabilities();
     scinions.push(newScinion);
     emit NewScinion(id, _name);
+    return id;
   }
 
   function _setPerfectHabilities() pure private returns (uint habilities) {
     return 100100100100100100100100100100;
   }
 
-
-  function _transferScinion(address _from, address _to, uint256 _tokenId) private {
-    ownerScinionCount[_to] = ownerScinionCount[_to].add(1);
-    ownerScinionCount[_from] = ownerScinionCount[_from].sub(1);
-    scinionToOwner[_tokenId] = _to;
-    emit Transfer(_from, _to, _tokenId);
+  function _setScinionType() pure private returns (string memory scinionType) {
+    return "Scinion";
   }
 
-  function transferScinion(address _from, address _to, uint256 _tokenId) external payable onlyOwner {
-      require(msg.value >= minPrice, "Not enough ETH sent; check price!"); 
-      _transferScinion(_from, _to, _tokenId);
-      transferFrom(_from, _to, _tokenId);
-   } 
-
-  function claimScinion(uint256 _tokenId) external payable {
-    emit MoneyTransfer(msg.value, msg.sender);
-    require(msg.value >= minPrice, "Not enough ETH sent; check price!"); 
-    ownerScinionCount[msg.sender] = ownerScinionCount[msg.sender].add(1);
-    scinionToOwner[_tokenId] = msg.sender;
-    emit Transfer(msg.sender, gameOwner, minPrice);
-    _safeMint(msg.sender, _tokenId);
+  function _setDna() pure private returns (uint dna) {
+    return 101030401;
   }
 
-  function balanceOfScinions(address owner) external view returns (uint balance) {
-    return ownerScinionCount[owner];
+  function mintScinion(string memory _name, string memory tokenURI_) external payable returns(uint id) {
+    uint tokenId = _createScinion(_name);
+    //require(msg.value >= minPrice, "Not enough ETH sent; check price!"); 
+    emit Transfer(address(0), msg.sender, tokenId);
+   // payable(owner()).transfer(msg.value);
+    _safeMint(msg.sender, tokenId);
+    _setTokenURI(tokenId, tokenURI_);
+    tokenURI(tokenId);
+    return tokenId;
   }
-
-
- /* function kill() public onlyOwner {
-      selfdestruct(owner());
-  } */
 
 }

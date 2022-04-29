@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 import "./scinionfactory.sol";
 
 
-contract ScinionHelper is ScinionFactoryTest1 {
+contract ScinionHelper is ScinionFactory {
 
      uint levelUpFee = 0.001 ether;
 
@@ -28,30 +28,17 @@ contract ScinionHelper is ScinionFactoryTest1 {
         scinions[_scinionId].dna = _newDna;
     }
 
-    function getScinionsByOwner(address _owner) private view returns(Scinion[] memory) {
+    function getScinionsByOwner() public view returns(Scinion[] memory) {
         Scinion[] memory scinionsByOwner;
         for (uint i = 0; i < scinions.length; i++) {
-            if (scinionToOwner[i] == _owner) {
-                scinionsByOwner[i]= scinions[i];
+            if (ownerOf(i)==msg.sender) {
+                scinionsByOwner[i]=scinions[i];
             }
         }    
-        /*
-        uint[] memory result = new uint[](ownerScinionCount[_owner]);
-        uint counter = 0;
-        for (uint i = 0; i < scinions.length; i++) {
-            if (scinionToOwner[i] == _owner) {
-                result[counter] = i;
-                counter++;
-            }
-        }
-        return result;
-
-
-        */
         return scinionsByOwner;
     }
 
-
+    // TODO: develop functionality
     function completarInvestigacion(uint _scinionId) public onlyOwnerOf(_scinionId) {
         Scinion storage scinionSelected = scinions[_scinionId];
         scinionSelected.level = scinionSelected.level+1;
@@ -63,7 +50,7 @@ contract ScinionHelper is ScinionFactoryTest1 {
         scinionSelected.energia = 10;
     }
 
-    function getOneScinionData() external pure returns(string memory name, uint16 level, uint8 energia){
+    function getDummyeScinionData() external pure returns(string memory name, uint16 level, uint8 energia){
         Scinion memory newScinion;
         newScinion.name = "Alba";
         newScinion.scinionType = "Buenas manos";

@@ -8,12 +8,11 @@ module.exports = async function(callback) {
 	let accounts = await web3.eth.getAccounts();
     console.log(accounts);
     let scinionsFactoryInstance = await ScinionsFactory.deployed();
-    const result = await scinionsFactoryInstance.createScinion("Alba", "Buenas manos", 12345678, {from: accounts[0]});
+    let scinionsHelperInstance = await ScinionsHelper.deployed();
+    const result = await scinionsFactoryInstance.claimScinion("Alba", {from: accounts[4], value: web3.utils.toWei('0.1', 'ether')});
     console.log(result.logs[0].args.scinionId.toNumber());
-    scinionsFactoryInstance.mintScinion(result.logs[0].args.scinionId.toNumber(), {from: accounts[4]});
-    const owner = await scinionsFactoryInstance.seeScinionsWithOwner(result.logs[0].args.scinionId.toNumber() ,{from: accounts[4]});
-    const scinions = await scinionsFactoryInstance.seeScinionsWithOwner(result.logs[0].args.scinionId.toNumber(), {from: accounts[4]});
-    console.log(owner);
-    console.log(scinions);
+    const names = await scinionsHelperInstance.getScinionsByOwner(accounts[4], {from: accounts[4]});
+    console.log(names);
+
 	callback();
 }
