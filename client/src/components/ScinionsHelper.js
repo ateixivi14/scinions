@@ -1,8 +1,8 @@
 import React, {useState} from 'react'
 import {ethers} from 'ethers'
 
-import ScinionHelperContract from "./../contracts/ScinionHelper.json";
-const contractAddress = "";
+import ScinionHelperContract from "./../contracts/ScinionFactory.json";
+const contractAddress = "0x9D4679f706C8A047A46C9235a6a0BE562bFA47D6";
 
 const ScinionsHelper = () => {
 
@@ -22,11 +22,11 @@ const ScinionsHelper = () => {
               const scinionHelperInstance = new ethers.Contract(contractAddress, ScinionHelperContract.abi, signer);
     
               console.log("Initialize request");
-              let scinionData = await scinionHelperInstance.getOneScinionData();
+              let scinionData = await scinionHelperInstance.getAllScinions();
 
-              setName(scinionData.name);
-              setLevel(scinionData.level);
-              setEnergia(scinionData.energia);
+              setName(scinionData[0].name);
+              setLevel(scinionData[0].level);
+              setEnergia(scinionData[0].energy);
     
               console.log(scinionData);
     

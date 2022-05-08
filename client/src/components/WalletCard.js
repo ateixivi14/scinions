@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { connectToMetamask } from './../redux/metamask/actions'
+import { connectToMetamask, updateAccount } from './../redux/metamask/actions'
 import { useEffect } from 'react';
 
 const WalletCard = () => {
@@ -12,6 +12,8 @@ const WalletCard = () => {
     console.table(metamask);
 
     useEffect(() => {
+
+        dispatch(updateAccount())
         
     }, [dispatch]);
   

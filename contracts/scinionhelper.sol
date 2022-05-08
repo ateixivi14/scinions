@@ -28,38 +28,15 @@ contract ScinionHelper is ScinionFactory {
         scinions[_scinionId].dna = _newDna;
     }
 
-    function getScinionsByOwner() public view returns(Scinion[] memory) {
-        Scinion[] memory scinionsByOwner;
-        for (uint i = 0; i < scinions.length; i++) {
-            if (ownerOf(i)==msg.sender) {
-                scinionsByOwner[i]=scinions[i];
-            }
-        }    
-        return scinionsByOwner;
-    }
-
     // TODO: develop functionality
-    function completarInvestigacion(uint _scinionId) public onlyOwnerOf(_scinionId) {
+    function completeInvestigation(uint _scinionId) public onlyOwnerOf(_scinionId) {
         Scinion storage scinionSelected = scinions[_scinionId];
         scinionSelected.level = scinionSelected.level+1;
     }
 
-
-    function dormir(uint _scinionId) public onlyOwnerOf(_scinionId) {
+    function sleep(uint _scinionId) public onlyOwnerOf(_scinionId) {
         Scinion storage scinionSelected = scinions[_scinionId];
         scinionSelected.energia = 10;
-    }
-
-    function getDummyeScinionData() external pure returns(string memory name, uint16 level, uint8 energia){
-        Scinion memory newScinion;
-        newScinion.name = "Alba";
-        newScinion.scinionType = "Buenas manos";
-        newScinion.dna = 1234568;
-        newScinion.energia = 10;
-        newScinion.level = 1;
-        newScinion.habilities = 100100100100100100100;
-        return (newScinion.name, newScinion.level, newScinion.energia);
-
     }
 
 }

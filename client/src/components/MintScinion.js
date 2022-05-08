@@ -1,8 +1,8 @@
 import React, {useState} from 'react'
 import {ethers} from 'ethers'
 
-import ScinionHelperContract from "./../contracts/ScinionHelper.json";
-const contractAddress = "0xbDb5568F71676eba993341A353246D6334d4aF94";
+import scinionFactoryContract from "./../contracts/ScinionFactory.json";
+const contractAddress = "0x9D4679f706C8A047A46C9235a6a0BE562bFA47D6";
 
 
 const MintScinion = () => {
@@ -17,12 +17,13 @@ const MintScinion = () => {
             if (ethereum) {
               const provider = new ethers.providers.Web3Provider(ethereum);
               const signer = provider.getSigner();
-              const scinionHelperInstance = new ethers.Contract(contractAddress, ScinionHelperContract.abi, signer);
+              const scinionFactoryInstance = new ethers.Contract(contractAddress, scinionFactoryContract.abi, signer);
     
               console.log("Initialize request");
-              let tokenId = await scinionHelperInstance.claimScinion("robert");
+              let tokenId = await scinionFactoryInstance.mintScinion("robert");
+              console.log(tokenId);
 
-              setTokenId(tokenId);
+             // setTokenId(tokenId);
     
               console.log(tokenId);
     

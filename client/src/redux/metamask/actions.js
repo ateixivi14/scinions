@@ -68,8 +68,11 @@ export const connectToMetamask = () => {
   };
 };
 
-export const updateAccount = (account) => {
+export const updateAccount = () => {
   return async (dispatch) => {
-    dispatch(updateAccountRequest({ account: account }));
+
+    window.ethereum.on("accountsChanged", (accounts) => {
+      dispatch(updateAccountRequest(accounts[0] ));
+    });
   };
 };
